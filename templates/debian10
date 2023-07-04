@@ -1,0 +1,2 @@
+FLASH_IMG="flashEdk.img"
+VMIMG_URL="https://cloud.debian.org/images/cloud/buster/daily/20230629-1426/debian-10-generic-arm64-daily-20230629-1426.qcow2"

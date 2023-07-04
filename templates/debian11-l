@@ -1,0 +1,3 @@
+FLASH_IMG="flashEdk.img"
+DISK_SIZE="+20G"
+VMIMG_URL="https://cloud.debian.org/images/cloud/bullseye/20230601-1398/debian-11-generic-arm64-20230601-1398.qcow2"
