@@ -123,8 +123,8 @@ function executeCloudImage() {
     fi
     source variables.sh
     export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
-    qemu-system-aarch64 -m 2048 -smp 2 -cpu cortex-a57 -M virt,highmem=off \
-        -name "$1" \
+    qemu-system-aarch64 -m 4096 -smp 2 -cpu cortex-a57 -M virt \
+        -name "$1" -display vnc=unix:vnc.socket \
         -accel hvf -daemonize \
         -monitor unix:qemu-monitor-socket,server,nowait \
         -drive if=pflash,file=flash0.img,format=raw \
@@ -178,7 +178,7 @@ function vmStatus() {
     fi
 }
 
-if [ "$1" == "create" ]; then
+if [ "$1" == "create" -o "$1" == "new" ]; then
     createFromCloudImage "$2"
 elif [ "$1" == "run" ]; then
     executeCloudImage "$2"
