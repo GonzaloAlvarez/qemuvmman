@@ -1,0 +1,2 @@
+FLASH_IMG="flashEdk.img"
+VMIMG_URL="https://cloud-images.ubuntu.com/releases/groovy/release/ubuntu-20.10-server-cloudimg-arm64.img"
