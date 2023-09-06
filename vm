@@ -158,7 +158,8 @@ function connectSsh() {
     [[ -d "$1" ]] || _fail "That's not an available VM number. Use ./vm list"
     cd "$1"
     source variables.sh
-    ssh -l $SSH_USER -p $SSH_PORT -i $SSH_PRIVATE_KEY -oUserKnownHostsFile=/dev/null -oStrictHostKeyChecking=no localhost
+    shift
+    ssh -l $SSH_USER -p $SSH_PORT -i $SSH_PRIVATE_KEY -o LogLevel=ERROR -oUserKnownHostsFile=/dev/null -oStrictHostKeyChecking=no localhost $@
     cd ..
 }
 
@@ -178,6 +179,17 @@ function vmStatus() {
     fi
 }
 
+function copyremote() {
+    echo "$1"
+    [[ -d "$1" ]] || _fail "That's not an available VM number. Use ./vm list"
+    cd "$1"
+    source variables.sh
+    shift
+    scp -P $SSH_PORT -i $SSH_PRIVATE_KEY -o LogLevel=ERROR -oUserKnownHostsFile=/dev/null -oStrictHostKeyChecking=no $@ gonzalo@localhost:/home/gonzalo
+    cd ..
+}
+
+
 if [ "$1" == "create" -o "$1" == "new" ]; then
     createFromCloudImage "$2"
 elif [ "$1" == "run" ]; then
@@ -185,7 +197,11 @@ elif [ "$1" == "run" ]; then
 elif [ "$1" == "monitor" ]; then
     connectMonitor "$2"
 elif [ "$1" == "ssh" ]; then
-    connectSsh "$2"
+    shift
+    connectSsh $@
+elif [ "$1" == "scp" ]; then
+    shift
+    copyremote $@
 elif [ "$1" == "status" ]; then
     vmStatus "$2"
 else
