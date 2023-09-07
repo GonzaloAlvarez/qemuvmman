@@ -8,8 +8,8 @@
 set -e
 
 SSH_PRIVATE_KEY="$HOME/.ssh/main_private_key.pem"
-
-[[ -d "cache" ]] || mkdir cache
+[[ "$CACHE_PATH" ]] || CACHE_PATH="$(pwd)/cache"
+[[ -d "$CACHE_PATH" ]] || mkdir -p $CACHE_PATH
 
 function _fail() {
     echo "$@"
@@ -18,8 +18,8 @@ function _fail() {
 
 function _bootstrapBios() {
     [[ "$FLASH_IMG" ]] || export FLASH_IMG="flash0.img"
-    if [ -f "../cache/$FLASH_IMG" ]; then
-        cp "../cache/$FLASH_IMG" "flash0.img"
+    if [ -f "$CACHE_PATH/$FLASH_IMG" ]; then
+        cp "$CACHE_PATH/$FLASH_IMG" "flash0.img"
     else
         echo "Downloading EFI image"
         if [ "flash0.img" = "$FLASH_IMG" ]; then
@@ -30,20 +30,20 @@ function _bootstrapBios() {
         dd if=/dev/zero of=flash0.img bs=1m count=64 status=none
         dd if=QEMU_EFI.fd of=flash0.img conv=notrunc status=none
         rm -f QEMU_EFI.fd
-        cp flash0.img "../cache/$FLASH_IMG"
+        cp flash0.img "$CACHE_PATH/$FLASH_IMG"
     fi
 
-    if [ -f "../cache/flash1.img" ]; then
-        cp "../cache/flash1.img" "flash1.img"
+    if [ -f "$CACHE_PATH/flash1.img" ]; then
+        cp "$CACHE_PATH/flash1.img" "flash1.img"
     else
         dd if=/dev/zero of=flash1.img bs=1m count=64 status=none
-        cp "flash1.img" "../cache/flash1.img"
+        cp "flash1.img" "$CACHE_PATH/flash1.img"
     fi
 }
 
 function _bootstrapCloudImage() {
-    if [ -f "../cache/cloud.img" ]; then
-        cp "../cache/cloud.img" "cloud.img"
+    if [ -f "$CACHE_PATH/cloud.img" ]; then
+        cp "$CACHE_PATH/cloud.img" "cloud.img"
     else
         # Check that docker is running
         docker info > /dev/null 2>&1 || _fail "Docker not running. Exiting"
@@ -70,7 +70,7 @@ EOF
         docker run -v $(pwd):/mnt cloud-image-utils cloud-localds -v -d qcow2 /mnt/cloud.img /mnt/cloud.txt
         docker rm $(docker ps -a -f status=exited -q)
         docker image rm cloud-image-utils
-        cp cloud.img "../cache/cloud.img"
+        cp cloud.img "$CACHE_PATH/cloud.img"
     fi
 }
 
@@ -91,11 +91,11 @@ function createFromCloudImage() {
     VMIMG_FILE="$(basename ${VMIMG_URL})"
 
     # Get the file or use the orig
-    if [ -f "../cache/$VMIMG_FILE" ]; then
-        cp "../cache/$VMIMG_FILE" "$VMIMG_FILE"
+    if [ -f "$CACHE_PATH/$VMIMG_FILE" ]; then
+        cp "$CACHE_PATH/$VMIMG_FILE" "$VMIMG_FILE"
     else
         curl -LO "$VMIMG_URL"
-        cp "$VMIMG_FILE" "../cache/$VMIMG_FILE"
+        cp "$VMIMG_FILE" "$CACHE_PATH/$VMIMG_FILE"
     fi
 
     [[ -z "$DISK_SIZE" ]] || qemu-img resize "$VMIMG_FILE" "$DISK_SIZE"
