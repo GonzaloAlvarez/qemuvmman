@@ -180,7 +180,6 @@ function vmStatus() {
 }
 
 function copyremote() {
-    echo "$1"
     [[ -d "$1" ]] || _fail "That's not an available VM number. Use ./vm list"
     cd "$1"
     source variables.sh
@@ -214,5 +213,6 @@ Commands:
     monitor  [vm]           Monitor and connect to the VM manager
     ssh      [vm]           Connect to the VM
     status   [vm]           Get the state of a VM
+    scp      [vm] [files]   Copy files to home environment on target host
 EOF
 fi
