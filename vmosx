@@ -50,13 +50,14 @@ function executeImage() {
     [[ -d "$1" ]] || _fail "That's not an available VM number. Use ./vm list"
 
     cd "$1"
-    ./macosvm -g $2 vm.json
+    shift 3
+    ./macosvm -g $@ vm.json
 }
 
 if [ "$1" == "create" -o "$1" == "new" ]; then
     createImage "$2"
 elif [ "$1" == "run" ]; then
-    executeImage "$2" "$3"
+    executeImage "$2" $@
 else
     cat << EOF
 Usage: ./vm command [arguments]

@@ -1,0 +1,2 @@
+FLASH_IMG="flashEdk.img"
+VMIMG_URL="https://cloud-images.ubuntu.com/releases/hirsute/release-20220118/ubuntu-21.04-server-cloudimg-arm64.img"
